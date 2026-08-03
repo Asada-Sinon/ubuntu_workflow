@@ -23,10 +23,29 @@ _UW_FETCH_LOADED=1
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
 # ── curl 包装 ───────────────────────────────────────────────────
+# --retry-all-errors 很关键：curl 默认的 --retry 只重试连接错误和 5xx，
+# 而 GitHub 限流返回的是 403/429 —— 不在默认重试范围内。
+# 「新机连续拉十几个二进制」正是最容易触发限流的场景，一次被限流就会让
+# 整个 bootstrap 以 rc=3 告终。docker 冒烟测试里真的撞上过一次
+# （starship 下载失败，重跑即成功）。
+# 该选项需要 curl >= 7.71；jammy 是 7.81。老版本上自动降级，不影响可用性。
+_UW_CURL_RETRY_ALL=""
+_uw_curl_probe_caps() {
+  [[ -n "$_UW_CURL_RETRY_ALL" ]] && return 0
+  if curl --help all 2>/dev/null | grep -q -- '--retry-all-errors'; then
+    _UW_CURL_RETRY_ALL="--retry-all-errors"
+  else
+    _UW_CURL_RETRY_ALL="-"      # 哨兵：探测过了，但不支持
+  fi
+}
+
 _uw_curl() {
+  _uw_curl_probe_caps
+  local -a extra=()
+  [[ "$_UW_CURL_RETRY_ALL" == "--retry-all-errors" ]] && extra+=(--retry-all-errors)
   curl --fail --location --silent --show-error \
        --proto '=https' --tlsv1.2 \
-       --retry 3 --retry-delay 2 --retry-connrefused \
+       --retry 5 --retry-delay 3 --retry-connrefused "${extra[@]}" \
        --connect-timeout 15 --max-time 900 \
        "$@"
 }

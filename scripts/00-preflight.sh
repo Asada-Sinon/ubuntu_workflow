@@ -83,9 +83,7 @@ _bootstrap_jq() {
   mkdir -p "$UW_BOOTSTRAP_BIN" || return 1
   # 刻意不走 install_binary_from_url —— 那个函数在 DRY_RUN 下只发 HEAD。
   # 这里必须真的下载。
-  curl --fail --location --silent --show-error --proto '=https' \
-       --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 180 \
-       -o "$UW_BOOTSTRAP_BIN/.jq.part" "$url" || return 1
+  _uw_curl -o "$UW_BOOTSTRAP_BIN/.jq.part" "$url" || return 1
   chmod 0755 "$UW_BOOTSTRAP_BIN/.jq.part"
   mv -f "$UW_BOOTSTRAP_BIN/.jq.part" "$UW_BOOTSTRAP_BIN/jq"
   hash -r 2>/dev/null
