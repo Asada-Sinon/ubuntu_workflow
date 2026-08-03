@@ -22,6 +22,56 @@ cd ubuntu_workflow
 
 ---
 
+## 验证状态
+
+**已在全新的 `ubuntu:22.04` 容器里跑通全流程**（2026-08-03，commit `bfa325f`）。
+测的是真实路径：从 GitHub `git clone`，不是挂载本地目录。
+
+容器基线是一台真白机 —— `zsh git curl jq tmux fzf rg fd bat eza starship node python3`
+**一个都没有**。
+
+| 环节 | 退出码 | 结果 |
+|---|:--:|---|
+| `bootstrap --dry-run` | **0** | 24 成功 · 1 跳过 · **0 失败**，26 个下载 URL 全部可达 |
+| `bootstrap`（minimal） | **0** | 59 成功 · 3 跳过 · **0 失败** |
+| `verify` | 2 | 50 ok · 2 warn · **0 fail**（两条 warn 见下） |
+| 幂等性（再跑一遍） | **0** | 命中 32 处「已存在」跳过 |
+| 端到端断言 | — | **28 / 28 通过** |
+
+`verify` 返回 2 是容器环境的正常结果，两条 warn 都不是 bug：git 身份未填写
+（刻意不自动填、不猜），以及 `docker run` 不带 `-t` 没有 TTY 导致
+`zsh -i` 里有东西调 `tput` 报了一句 —— 真实终端里不会出现。
+
+其中被显式断言验证过的关键行为：
+
+- 执行 `git config --global user.email` 之后**仓库工作树仍然干净** ——
+  证明 `~/.gitconfig` 用 generate 而非软链，确实挡住了身份写进 public 仓库
+- 交互式 zsh 的 `$PATH` 里 `~/.local/bin` **恰好出现一次**（GAP-FIX #4）
+- `zsh -i` 正常启动、5 个插件全部 clone 到钉死的 commit sha
+- 三处 GAP-FIX 全部到位：nvim 已装、rg 已装、`.tmux.conf` 存在且语法正确
+- 容器环境被正确识别，70-desktop 整步跳过
+
+### 这个测试抓到了 5 个问题
+
+不是走过场。**每一个都只在全新机器上才会暴露** —— 在一台已经配好的机器上
+（比如固化这套配置的那台）全都测不出来：
+
+| 问题 | 症状 | 为什么本机测不出 |
+|---|---|---|
+| jq 自举失效 | `--dry-run` 直接崩，退出码 1 | 本机早有 jq。而这是 `AGENTS.md` 让 agent 跑的**第一条命令** |
+| ripgrep 装错文件名 | 装成 `~/.local/bin/ripgrep`，验证命令却是 `rg --version` | 全清单唯一 id≠二进制名的条目，而本机根本没装 rg |
+| btop 版本探测失败 | `--version` 输出带 ANSI 颜色码，正则卡住 | 本机没装 btop |
+| dry-run 假警报 | 健康新机也返回退出码 2 | 本机 uv/zsh 都在，触发不了「上游步骤尚未执行」那个分支 |
+| GitHub 限流没重试 | 一次 403 就让整个 bootstrap 以 rc=3 告终 | 连拉 16 个二进制才撞得上 |
+
+前四个有个共同规律：**都出在「本机恰好已经有、因此从没被真实执行过」的代码路径上**。
+详见 `git log`（`610571c`、`ddddb80`、`bfa325f`）。
+
+复现方法见 [`docs/troubleshooting.md`](docs/troubleshooting.md#想在干净环境里试一遍) ——
+**改完 `manifest/` 或 `lib/` 之后建议跑一遍**。
+
+---
+
 ## 装出来是什么样
 
 - **配色** —— Catppuccin Mocha 全家桶：zsh 语法高亮、starship、fzf、bat、
@@ -195,6 +245,11 @@ CJK font pairing, all themed Catppuccin Mocha.
 Run `./bootstrap.sh --dry-run` then `./bootstrap.sh`, or hand the repo to a coding
 agent — `AGENTS.md` is the runbook. `./verify.sh` checks every item and exits
 0 / 2 / 3 for clean / warnings / failures.
+
+**Verified end-to-end in a clean `ubuntu:22.04` container** (cloned from GitHub,
+not bind-mounted): dry-run `rc=0`, bootstrap `rc=0` (59 ok · 3 skipped · 0 failed),
+28/28 assertions passed, re-run idempotent. That run caught 5 real bugs that were
+invisible on an already-configured machine — see 验证状态 above.
 
 Contains no SSH config, no git identity, no secrets, no font binaries.
 Docs are Chinese-primary.
