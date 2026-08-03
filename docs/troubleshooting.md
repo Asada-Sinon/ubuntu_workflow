@@ -159,17 +159,39 @@ sudo systemctl stop unattended-upgrades
 
 ## 想在干净环境里试一遍
 
-不改动本机的完整冒烟测试：
+不改动本机的完整冒烟测试。**刻意从 GitHub clone 而不是挂载本地目录** ——
+测的是「新机 git clone 之后能不能用」这条真实路径：
 
 ```bash
-docker run --rm -it -v "$PWD:/repo:ro" ubuntu:22.04 bash -c '
-  apt-get update -qq && apt-get install -y -qq git curl sudo ca-certificates >/dev/null
-  useradd -m -s /bin/bash test && cp -r /repo /home/test/uw && chown -R test /home/test/uw
-  su - test -c "cd ~/uw && ./bootstrap.sh --profile minimal --yes --no-sudo && ./verify.sh --profile minimal"
+docker run --rm -i ubuntu:22.04 bash -s <<'EOF'
+set -uo pipefail
+export DEBIAN_FRONTEND=noninteractive
+apt-get update -qq >/dev/null 2>&1
+apt-get install -y -qq git curl ca-certificates sudo >/dev/null 2>&1
+useradd -m -s /bin/bash tester
+echo 'tester ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/tester
+su - tester -c '
+  git clone --quiet --depth 1 https://github.com/Asada-Sinon/ubuntu_workflow.git
+  cd ubuntu_workflow
+  ./bootstrap.sh --dry-run --profile minimal --yes;  echo "dry-run  rc=$?"
+  ./bootstrap.sh --profile minimal --yes;            echo "bootstrap rc=$?"
+  ./verify.sh --profile minimal;                     echo "verify   rc=$?"
 '
+EOF
 ```
 
-容器里没有图形会话，所以 70-desktop 会自动跳过，字体检查会告警 —— 都是预期内的。
+三个退出码都该是 0。容器里没有图形会话，所以 70-desktop 整步跳过，
+字体和 GUI 检查在 `--profile minimal` 下不参与 —— 都是预期内的。
+
+**这个测试是有价值的，不是走过场。** 它抓到过三个只在全新机器上才暴露的
+bug（见 git log `610571c`）：`--dry-run` 在没装 jq 的机器上直接崩、
+ripgrep 因为 id 与二进制名不同而装错文件名、btop 的 `--version` 带 ANSI
+转义码导致版本探测失败。这三个在一台已经配好的机器上全都测不出来 ——
+前两个的工具本机早就装好了，第三个的 jq 本机就有。
+
+**改完 manifest 或 lib/ 之后建议跑一遍。** 尤其是加新工具的时候：
+最容易踩的就是 id 与实际二进制名不一致（全清单目前只有 ripgrep 是这样，
+它有 `"as": "rg"`）。
 
 ---
 

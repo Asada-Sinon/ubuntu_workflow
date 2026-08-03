@@ -140,6 +140,23 @@ command -v rg                       # 错，会骗你
 
 ---
 
+## 7.5 给 manifest 加新工具时
+
+最容易踩的两个坑，都是 docker 冒烟测试抓出来的：
+
+1. **`id` 和实际二进制名不一致时必须写 `"as"`。**
+   `install_binary_from_url` 默认按 `--name`（即 manifest 的 `id`）命名安装后的
+   文件。清单里目前只有 ripgrep 是这种情况（`id: ripgrep` / 二进制 `rg`），
+   它有 `"as": "rg"`。漏了的话表现为「装完却跑不起来」。
+2. **`verify.regex` 要对着工具的真实输出写。**
+   有些工具的 `--version` 带 ANSI 颜色码（btop 就是），版本号还可能带
+   `+githash` 后缀。`uw_probe_version` 已经统一剥 ANSI，但正则本身也别写太死。
+
+加完新工具后跑一遍 `docs/troubleshooting.md` 里的 docker 冒烟测试 ——
+在一台已经配好的机器上，这两个坑都测不出来。
+
+---
+
 ## 8. 禁止事项
 
 - **不问就 `chsh`**（Q5）。且要告诉人：改完必须**完整注销重登**，开新标签页没用。

@@ -73,9 +73,17 @@ done
 # 刻意放最后，且必须问过人。
 ZSH_BIN="$(uw_which zsh)"
 if [[ -z "$ZSH_BIN" ]]; then
-  warn "zsh 不在 PATH 上，跳过 chsh（先让 10-apt 装上 zsh）"
-  report 40 chsh fail "zsh 缺失"
-  [[ "$RC" == 0 ]] && RC=2
+  # 同 30-runtimes：dry-run 下 zsh 由步骤 10 安装，此刻不存在是正常的，
+  # 不该判成 fail，否则新机跑 --dry-run 永远拿到退出码 2。
+  if [[ "$DRY_RUN" == 1 ]]; then
+    printf '%s  DRY  chsh -s <zsh> %s（zsh 由步骤 10 安装，dry-run 下尚不存在）%s\n' \
+      "$C_DIM" "$USER" "$C_RESET"
+    report 40 chsh na "dry-run：待 10-apt 装上 zsh"
+  else
+    warn "zsh 不在 PATH 上，跳过 chsh（先让 10-apt 装上 zsh）"
+    report 40 chsh fail "zsh 缺失"
+    [[ "$RC" == 0 ]] && RC=2
+  fi
   exit "$RC"
 fi
 

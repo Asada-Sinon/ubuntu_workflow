@@ -56,9 +56,18 @@ for id in "${PYIDS[@]}"; do
   spec="$(tool_field "$id" '.uv_python.spec')"
   uv_bin="$(uw_which uv)"
   if [[ -z "$uv_bin" ]]; then
-    warn "uv 不在 PATH 上，跳过 uv python install（先让 20-binaries 装上 uv）"
-    report 30 "$id" fail "uv 缺失"
-    [[ "$RC" == 0 ]] && RC=2
+    # dry-run 下 uv 当然还不存在 —— 它由步骤 20 安装，而 dry-run 只是模拟。
+    # 把这种「上游步骤尚未真正执行」判成 fail，会让一台完全健康的新机
+    # 在 --dry-run 时也返回退出码 2，等于每次都放假警报。
+    if [[ "$DRY_RUN" == 1 ]]; then
+      printf '%s  DRY  uv python install %s（uv 由步骤 20 安装，dry-run 下尚不存在）%s\n' \
+        "$C_DIM" "$spec" "$C_RESET"
+      report 30 "$id" na "dry-run：待 20-binaries 装上 uv"
+    else
+      warn "uv 不在 PATH 上，跳过 uv python install（先让 20-binaries 装上 uv）"
+      report 30 "$id" fail "uv 缺失"
+      [[ "$RC" == 0 ]] && RC=2
+    fi
     continue
   fi
   if [[ "$DRY_RUN" == 1 ]]; then
