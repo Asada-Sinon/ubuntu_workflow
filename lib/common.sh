@@ -17,6 +17,14 @@ UW_DOWNLOADS="$UW_CACHE/downloads"
 UW_STAMPS="$UW_CACHE/steps"
 UW_BACKUP_ROOT="$UW_STATE/backup"
 
+# 自举用的暂存 bin。00-preflight 在系统没有 jq 时会把一个静态 jq 放这儿。
+# 放 cache 而不是 ~/.local/bin，是为了让 --dry-run 也能用：dry-run 承诺
+# 不改你的环境，而 ~/.cache 是纯暂存，删了不影响任何东西。
+# 每个步骤脚本都 source 本文件，所以这条 PATH 对所有步骤都生效
+# （步骤之间是独立进程，在 00 里 export PATH 传不下去）。
+UW_BOOTSTRAP_BIN="$UW_CACHE/bin"
+export PATH="$UW_BOOTSTRAP_BIN:$PATH"
+
 BIN_DIR="${BIN_DIR:-$HOME/.local/bin}"
 OPT_DIR="${OPT_DIR:-$HOME/.local/opt}"
 COMPLETION_DIR="${COMPLETION_DIR:-$HOME/.local/share/zsh/completions}"
@@ -216,15 +224,22 @@ uw_which() { # 解析真实二进制路径，忽略函数/别名/builtin
 }
 
 uw_probe_version() { # uw_probe_version '<cmd>' '<regex>'  -> 打印捕获组 1
-  local cmd="$1" re="$2" out
+  local cmd="$1" re="$2" out hit
   out="$(env -i \
         HOME="$HOME" \
         PATH="$BIN_DIR:$OPT_DIR/neovim/bin:$OPT_DIR/node20/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/snap/bin" \
         LC_ALL=C \
+        NO_COLOR=1 TERM=dumb \
         bash --noprofile --norc -c "$cmd" 2>&1)" || true
   [[ -z "$out" ]] && return 1
-  printf '%s\n' "$out" | sed -nE "s/.*${re}.*/\1/p" | head -1 | grep -q . && \
-    printf '%s\n' "$out" | sed -nE "s/.*${re}.*/\1/p" | head -1
+  # 剥掉 ANSI 转义序列。btop --version 会输出
+  #   "btop version: ESC[1m1.4.7+f7b2e8a"
+  # 不剥的话正则会卡在转义序列上，把已装好的工具误判成没装。
+  # （NO_COLOR/TERM=dumb 大多数工具认，btop 不认，所以还得真剥一遍。）
+  out="$(printf '%s\n' "$out" | sed -E 's/\x1b\[[0-9;]*[a-zA-Z]//g')"
+  hit="$(printf '%s\n' "$out" | sed -nE "s/.*${re}.*/\1/p" | head -1)"
+  [[ -z "$hit" ]] && return 1
+  printf '%s\n' "$hit"
 }
 
 # ── 交互 ────────────────────────────────────────────────────────

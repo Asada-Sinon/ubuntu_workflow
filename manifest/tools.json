@@ -84,6 +84,8 @@
         "tag": "{version}",
         "asset": "ripgrep-{version}-{rust_triple_musl}.tar.gz",
         "pick": "*/rg",
+        "as": "rg",
+        "_comment_as": "★ 全清单里唯一 id 与二进制名不同的条目。少了这个 as 会装成 ~/.local/bin/ripgrep，而验证命令是 `rg --version`，于是报「装完却跑不起来」。docker 冒烟测试抓到的。",
         "extra": [
           "*/complete/_rg:$COMPLETION_DIR/_rg",
           "*/doc/rg.1:$MAN_DIR/rg.1"

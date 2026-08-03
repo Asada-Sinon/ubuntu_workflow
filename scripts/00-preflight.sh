@@ -65,29 +65,51 @@ for c in curl tar; do
 done
 
 # ── jq：manifest 解析器，后面每一步都要 ────────────────────────
+#
+# ★ jq 是本工具**自身**的运行依赖，不是它要安装的产物之一。
+#   所以它必须真的装上，即使在 --dry-run 下 —— 没有 jq 就算不出
+#   dry-run 的计划，更别说校验 manifest。
+#
+#   这条曾经是个真 bug：--dry-run 时 `sudo_run apt-get install jq` 只打印
+#   不执行却返回 0，preflight 于是报「✓ jq 已装」，紧接着 jq -e 校验
+#   manifest 全线失败。在没装 jq 的新机上，`./bootstrap.sh --dry-run`
+#   —— AGENTS.md 让 agent 跑的第一条命令 —— 会直接崩掉。
+#
+#   处理方式：静态 jq 落在 $UW_CACHE/bin（纯暂存目录，不碰你的环境，
+#   所以 dry-run「不改环境」的承诺仍然成立），lib/common.sh 把这个目录
+#   加进 PATH，对所有步骤脚本生效。
+_bootstrap_jq() {
+  local url="https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-${GO_ARCH}"
+  mkdir -p "$UW_BOOTSTRAP_BIN" || return 1
+  # 刻意不走 install_binary_from_url —— 那个函数在 DRY_RUN 下只发 HEAD。
+  # 这里必须真的下载。
+  curl --fail --location --silent --show-error --proto '=https' \
+       --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 180 \
+       -o "$UW_BOOTSTRAP_BIN/.jq.part" "$url" || return 1
+  chmod 0755 "$UW_BOOTSTRAP_BIN/.jq.part"
+  mv -f "$UW_BOOTSTRAP_BIN/.jq.part" "$UW_BOOTSTRAP_BIN/jq"
+  hash -r 2>/dev/null
+  "$UW_BOOTSTRAP_BIN/jq" --version >/dev/null 2>&1
+}
+
 if command -v jq >/dev/null 2>&1; then
   ok "jq 已就绪（$(jq --version)）"
   report 00 jq skip "$(jq --version)"
 else
-  info "缺 jq —— 后续步骤全靠它解析 manifest"
-  if [[ "$NO_SUDO" != 1 ]] && sudo_run apt-get install -y -qq jq >/dev/null 2>&1; then
+  info "缺 jq —— 它是本工具自身的运行依赖（解析 manifest），必须先装上"
+  if [[ "$NO_SUDO" != 1 && "$DRY_RUN" != 1 ]] \
+     && sudo_run apt-get install -y -qq jq >/dev/null 2>&1 \
+     && command -v jq >/dev/null 2>&1; then
     ok "jq 已装（apt）"
     report 00 jq ok "apt"
+  elif _bootstrap_jq; then
+    ok "jq 已装（静态二进制 → $UW_BOOTSTRAP_BIN/jq）"
+    [[ "$DRY_RUN" == 1 ]] && info "（dry-run 下也会真的下载它 —— 否则算不出计划。它只落在 ~/.cache，删掉即可）"
+    report 00 jq ok "static → $UW_BOOTSTRAP_BIN"
   else
-    # 没有 sudo 也能活：用仓库自己的原语拉一个静态 jq 到 ~/.local/bin
-    info "apt 走不通，改用静态二进制（~/.local/bin/jq）"
-    mkdir -p "$BIN_DIR"
-    if install_binary_from_url \
-         --name jq --version 1.8.2 \
-         --url "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-${GO_ARCH}" \
-         --check 'jq --version' --check-regex '^jq-([0-9.]+)'; then
-      report 00 jq ok "static"
-    else
-      err "装不上 jq。手动装一个再重跑：sudo apt install -y jq"
-      report 00 jq fail "装不上"
-      exit 1
-    fi
-    export PATH="$BIN_DIR:$PATH"
+    err "装不上 jq。手动装一个再重跑：sudo apt install -y jq"
+    report 00 jq fail "装不上"
+    exit 1
   fi
 fi
 
