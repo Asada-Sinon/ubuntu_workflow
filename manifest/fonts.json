@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "_comment": "字体二进制不进版本库（源机器上 NerdFonts 1.4 GB + CJK 238 MB），由 60-fonts.sh 从上游下载。默认装 minimal：只装 ghostty config 和 fontconfig 规则真正引用到的那几款。",
+
+  "nerd_fonts_release": "v3.5.0",
+  "dest_nerd": "$HOME/.local/share/fonts/NerdFonts",
+  "dest_cjk": "$HOME/.local/share/fonts/CJK",
+
+  "sets": {
+    "minimal": ["IosevkaTermSlab", "LXGWWenKaiMono"],
+    "full": [
+      "IosevkaTermSlab", "JetBrainsMono", "Meslo",
+      "Monaspace", "FiraCode", "CodeNewRoman", "LXGWWenKaiMono"
+    ]
+  },
+
+  "fonts": [
+    {
+      "id": "IosevkaTermSlab",
+      "kind": "nerd_font",
+      "asset": "IosevkaTermSlab.zip",
+      "family": "IosevkaTermSlab Nerd Font Mono",
+      "why": "★ 主字体。ghostty config 的第一行 font-family 就是它，衬线(slab serif)等宽",
+      "approx_mb": 90
+    },
+    {
+      "id": "LXGWWenKaiMono",
+      "kind": "url",
+      "urls": [
+        "https://github.com/lxgw/LxgwWenKai/releases/download/v1.522/LXGWWenKaiMono-Regular.ttf",
+        "https://github.com/lxgw/LxgwWenKai/releases/download/v1.522/LXGWWenKaiMono-Medium.ttf",
+        "https://github.com/lxgw/LxgwWenKai/releases/download/v1.522/LXGWWenKaiMono-Light.ttf"
+      ],
+      "dest": "$DEST_CJK",
+      "family": "LXGW WenKai Mono",
+      "why": "★ 霞鹜文楷等宽。中文 fallback —— 上面那些拉丁字体都不含汉字，必然回退到这里。ghostty 的第二行 font-family + fontconfig 的三条规则都指向它",
+      "approx_mb": 30
+    },
+    {
+      "id": "JetBrainsMono",
+      "kind": "nerd_font",
+      "asset": "JetBrainsMono.zip",
+      "family": "JetBrainsMono Nerd Font Mono",
+      "why": "经典无衬线，可读性最佳。ghostty config 注释里列为备选",
+      "approx_mb": 250
+    },
+    {
+      "id": "Meslo",
+      "kind": "nerd_font",
+      "asset": "Meslo.zip",
+      "family": "MesloLGS Nerd Font Mono",
+      "why": "powerlevel10k 官方推荐款。本套配置不用 p10k，纯粹作为备选保留",
+      "approx_mb": 200
+    },
+    {
+      "id": "Monaspace",
+      "kind": "nerd_font",
+      "asset": "Monaspace.zip",
+      "family": "MonaspiceXe Nerd Font Mono",
+      "why": "GitHub Monaspace。其中 Xenon(Xe) 是 slab serif，被 fontconfig 的第二条 CJK 规则引用",
+      "approx_mb": 400
+    },
+    {
+      "id": "FiraCode",
+      "kind": "nerd_font",
+      "asset": "FiraCode.zip",
+      "family": "FiraCode Nerd Font Mono",
+      "why": "连字最出名的一款，备选",
+      "approx_mb": 150
+    },
+    {
+      "id": "CodeNewRoman",
+      "kind": "nerd_font",
+      "asset": "CodeNewRoman.zip",
+      "family": "CodeNewRoman Nerd Font Mono",
+      "why": "Times New Roman 血统，衬线感最强。被 fontconfig 的第三条 CJK 规则引用",
+      "approx_mb": 20
+    }
+  ]
+}

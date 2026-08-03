@@ -1,0 +1,4 @@
+* text=auto eol=lf
+manifest/*.json text eol=lf
+manifest/*.tsv  text eol=lf
+*.sh text eol=lf

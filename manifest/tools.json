@@ -1,0 +1,358 @@
+{
+  "schema_version": 1,
+  "_comment": "唯一事实来源。版本全部钉死，不走 GitHub API（未授权 60 req/hr，13 个工具加重试正好撞上，而且不可复现）。URL 直接拼出来即可。改版本请用 scripts/dev/bump-pins.sh，或手改后跑 ./bootstrap.sh --dry-run 确认 URL 还活着。",
+
+  "source": {
+    "captured_at": "2026-08-03",
+    "os": "Ubuntu 22.04.5 LTS (jammy)",
+    "arch": "x86_64",
+    "shell": "zsh 5.8.1",
+    "locale": "zh_CN.UTF-8",
+    "session": "wayland"
+  },
+
+  "defaults": {
+    "bin_dir": "$HOME/.local/bin",
+    "opt_dir": "$HOME/.local/opt",
+    "completion_dir": "$HOME/.local/share/zsh/completions",
+    "man_dir": "$HOME/.local/share/man/man1"
+  },
+
+  "profiles": {
+    "minimal": ["core", "cli", "shell"],
+    "desktop": ["core", "cli", "shell", "gui"]
+  },
+
+  "tools": [
+    {
+      "id": "jq",
+      "group": "core",
+      "required": true,
+      "method": "github_release",
+      "version": "1.8.2",
+      "why": "本仓库自己的 manifest 解析器。00-preflight 优先用 apt 装；--no-sudo 时走这条静态二进制兜底",
+      "github": {
+        "repo": "jqlang/jq",
+        "tag": "jq-{version}",
+        "asset": "jq-linux-{go_arch}"
+      },
+      "verify": { "cmd": "jq --version", "regex": "^jq-([0-9.]+)" }
+    },
+    {
+      "id": "fzf",
+      "group": "cli",
+      "required": true,
+      "method": "github_release",
+      "version": "0.74.2",
+      "why": "模糊查找器。Ctrl-T 找文件 / Ctrl-R / Alt-C 跳目录，fzf-tab 的补全预览也全靠它",
+      "github": {
+        "repo": "junegunn/fzf",
+        "tag": "v{version}",
+        "asset": "fzf-{version}-linux_{go_arch}.tar.gz",
+        "pick": "fzf"
+      },
+      "verify": { "cmd": "fzf --version", "regex": "^([0-9]+\\.[0-9]+\\.[0-9]+)" }
+    },
+    {
+      "id": "fd",
+      "group": "cli",
+      "required": true,
+      "method": "github_release",
+      "version": "10.4.2",
+      "why": "find 的现代替代。.zshrc 里 alias find=fd，且是 FZF_DEFAULT_COMMAND",
+      "github": {
+        "repo": "sharkdp/fd",
+        "tag": "v{version}",
+        "asset": "fd-v{version}-{rust_triple_musl}.tar.gz",
+        "pick": "*/fd",
+        "extra": [
+          "*/autocomplete/_fd:$COMPLETION_DIR/_fd",
+          "*/fd.1:$MAN_DIR/fd.1"
+        ]
+      },
+      "verify": { "cmd": "fd --version", "regex": "^fd ([0-9.]+)" }
+    },
+    {
+      "id": "ripgrep",
+      "group": "cli",
+      "required": true,
+      "method": "github_release",
+      "version": "15.2.0",
+      "why": "GAP-FIX #2：源机器 .zshrc 第 166 行有 `alias grep=rg`，但 rg 从来没装过，这条别名一直是死的。注意 tag 没有 v 前缀",
+      "github": {
+        "repo": "BurntSushi/ripgrep",
+        "tag": "{version}",
+        "asset": "ripgrep-{version}-{rust_triple_musl}.tar.gz",
+        "pick": "*/rg",
+        "extra": [
+          "*/complete/_rg:$COMPLETION_DIR/_rg",
+          "*/doc/rg.1:$MAN_DIR/rg.1"
+        ]
+      },
+      "verify": { "cmd": "rg --version", "regex": "^ripgrep ([0-9.]+)" }
+    },
+    {
+      "id": "bat",
+      "group": "cli",
+      "required": true,
+      "method": "github_release",
+      "version": "0.26.1",
+      "why": "带语法高亮的 cat。alias cat=bat，且 MANPAGER 和 fzf 预览都用它",
+      "github": {
+        "repo": "sharkdp/bat",
+        "tag": "v{version}",
+        "asset": "bat-v{version}-{rust_triple_musl}.tar.gz",
+        "pick": "*/bat",
+        "extra": [
+          "*/autocomplete/bat.zsh:$COMPLETION_DIR/_bat",
+          "*/bat.1:$MAN_DIR/bat.1"
+        ]
+      },
+      "verify": { "cmd": "bat --version", "regex": "^bat ([0-9.]+)" },
+      "post_install": "bat cache --build",
+      "_comment": "post_install 让 bat 认出 ~/.config/bat/themes 里的 4 个 Catppuccin tmTheme；不跑的话 --theme=\"Catppuccin Mocha\" 会报未知主题"
+    },
+    {
+      "id": "eza",
+      "group": "cli",
+      "required": true,
+      "method": "github_release",
+      "version": "0.23.5",
+      "why": "ls 的现代替代，带图标和 git 状态。ls/l/ll/la/lt/ltt/lsize/lnew 八个别名全指向它",
+      "github": {
+        "repo": "eza-community/eza",
+        "tag": "v{version}",
+        "asset": "eza_{rust_triple_musl}.tar.gz",
+        "pick": "*eza",
+        "_comment": "asset 名里不带版本号，只有 triple"
+      },
+      "verify": { "cmd": "eza --version", "regex": "v([0-9.]+)" }
+    },
+    {
+      "id": "zoxide",
+      "group": "cli",
+      "required": true,
+      "method": "github_release",
+      "version": "0.10.0",
+      "why": "智能 cd。z foo 跳最常访问的含 foo 的目录，zi 用 fzf 交互选",
+      "github": {
+        "repo": "ajeetdsouza/zoxide",
+        "tag": "v{version}",
+        "asset": "zoxide-{version}-{rust_triple_musl}.tar.gz",
+        "pick": "zoxide",
+        "extra": ["completions/_zoxide:$COMPLETION_DIR/_zoxide"]
+      },
+      "verify": { "cmd": "zoxide --version", "regex": "^zoxide ([0-9.]+)" }
+    },
+    {
+      "id": "btop",
+      "group": "cli",
+      "required": false,
+      "method": "github_release",
+      "version": "1.4.7",
+      "why": "top 的现代替代，alias top=btop。配置和 3 个 Catppuccin 主题在 ~/.config/btop",
+      "github": {
+        "repo": "aristocratos/btop",
+        "tag": "v{version}",
+        "asset": "btop-{rust_triple_musl}.tar.gz",
+        "pick": "*/bin/btop"
+      },
+      "verify": { "cmd": "btop --version", "regex": "btop version: ([0-9.]+)" }
+    },
+    {
+      "id": "delta",
+      "group": "cli",
+      "required": true,
+      "method": "github_release",
+      "version": "0.19.2",
+      "why": "git 的分页器/diff 渲染器。git/gitconfig 里 core.pager=delta，side-by-side + Catppuccin。注意 tag 没有 v 前缀",
+      "github": {
+        "repo": "dandavison/delta",
+        "tag": "{version}",
+        "asset": "delta-{version}-{rust_triple_musl}.tar.gz",
+        "pick": "*/delta"
+      },
+      "verify": { "cmd": "delta --version", "regex": "^delta ([0-9.]+)" }
+    },
+    {
+      "id": "starship",
+      "group": "shell",
+      "required": true,
+      "method": "github_release",
+      "version": "1.26.0",
+      "why": "提示符。253 行的 ~/.config/starship.toml 全靠它渲染，没有它 .zshrc 最后一行静默跳过，提示符退回裸 zsh",
+      "github": {
+        "repo": "starship/starship",
+        "tag": "v{version}",
+        "asset": "starship-{rust_triple_musl}.tar.gz",
+        "pick": "starship"
+      },
+      "verify": { "cmd": "starship --version", "regex": "^starship ([0-9.]+)" }
+    },
+    {
+      "id": "atuin",
+      "group": "shell",
+      "required": false,
+      "method": "github_release",
+      "version": "18.18.1",
+      "why": "历史数据库，接管 Ctrl-R（上箭头保留 zsh 原生行为）。默认纯本地，auto_sync=false",
+      "github": {
+        "repo": "atuinsh/atuin",
+        "tag": "v{version}",
+        "asset": "atuin-{rust_triple_musl}.tar.gz",
+        "pick": "*/atuin"
+      },
+      "verify": { "cmd": "atuin --version", "regex": "^atuin ([0-9.]+)" }
+    },
+    {
+      "id": "fastfetch",
+      "group": "cli",
+      "required": false,
+      "method": "github_release",
+      "version": "2.66.0",
+      "why": "系统信息展示。纯装饰，配置在 ~/.config/fastfetch/config.jsonc",
+      "github": {
+        "repo": "fastfetch-cli/fastfetch",
+        "tag": "{version}",
+        "asset": "fastfetch-linux-{go_arch}.tar.gz",
+        "pick": "*/usr/bin/fastfetch"
+      },
+      "verify": { "cmd": "fastfetch --version", "regex": "^fastfetch ([0-9.]+)" }
+    },
+    {
+      "id": "gh",
+      "group": "cli",
+      "required": false,
+      "method": "github_release",
+      "version": "2.97.0",
+      "why": "GitHub CLI。git/gitconfig 把它设成了 credential helper，所以它不装 https 推送会没凭据。jammy 的 apt 只有 2022 年的 2.4.0，所以走静态二进制",
+      "github": {
+        "repo": "cli/cli",
+        "tag": "v{version}",
+        "asset": "gh_{version}_linux_{go_arch}.tar.gz",
+        "pick": "*/bin/gh",
+        "extra": ["*/share/man/man1/gh.1:$MAN_DIR/gh.1"]
+      },
+      "verify": { "cmd": "gh --version", "regex": "^gh version ([0-9.]+)" }
+    },
+    {
+      "id": "neovim",
+      "group": "cli",
+      "required": true,
+      "method": "url_archive",
+      "version": "0.12.4",
+      "why": "GAP-FIX #1：源机器 .zshrc 写死 EDITOR=vim，但 vim 和 nvim 都没装 —— git commit 不带 -m、alias zshrc、fc 全都会失败。现在装 nvim，.zshrc 改为 nvim→vim→vi 探测",
+      "url_archive": {
+        "url": "https://github.com/neovim/neovim/releases/download/v{version}/nvim-linux-{arch}.tar.gz",
+        "dest": "$HOME/.local/opt/neovim",
+        "strip": 1,
+        "link_bin": ["bin/nvim"],
+        "_comment": "nvim 0.11 起 asset 从 nvim-linux64.tar.gz 改名成 nvim-linux-x86_64.tar.gz —— 这正是 fetch.sh 装完要重验版本的原因"
+      },
+      "verify": { "cmd": "nvim --version", "regex": "^NVIM v([0-9.]+)" }
+    },
+    {
+      "id": "uv",
+      "group": "core",
+      "required": true,
+      "method": "github_release",
+      "version": "0.12.1",
+      "why": "唯一的 Python 管理器。这台机器上没有 pip / pipx / conda / pyenv，全部交给 uv，刻意如此",
+      "github": {
+        "repo": "astral-sh/uv",
+        "tag": "{version}",
+        "asset": "uv-{rust_triple}.tar.gz",
+        "pick": "*/uv",
+        "extra": ["*/uvx:$BIN_DIR/uvx"],
+        "_comment": "uv 用 gnu 而非 musl —— 官方 musl 版不带 uv python install 需要的部分能力"
+      },
+      "verify": { "cmd": "uv --version", "regex": "^uv ([0-9.]+)" }
+    },
+    {
+      "id": "node20",
+      "group": "core",
+      "required": true,
+      "method": "url_archive",
+      "version": "20.20.2",
+      "why": "jammy 的 apt 只有 node 12。npm 生态和 Claude Code 都要 >=18。装在 ~/.local/opt/node20，由 .zshrc 加进 PATH",
+      "url_archive": {
+        "url": "https://nodejs.org/dist/v{version}/node-v{version}-linux-{node_arch}.tar.xz",
+        "dest": "$HOME/.local/opt/node20",
+        "strip": 1,
+        "path_add": "$HOME/.local/opt/node20/bin",
+        "_comment": "nodejs.org 用 x64 而不是 amd64/x86_64，所以单独一个 {node_arch} 变量"
+      },
+      "verify": { "cmd": "$HOME/.local/opt/node20/bin/node --version", "regex": "^v([0-9.]+)" }
+    },
+    {
+      "id": "uv-python",
+      "group": "core",
+      "required": false,
+      "method": "uv_python",
+      "version": "3.12",
+      "why": "uv 托管的 CPython。系统 python3 是 3.10.12 且没有 pip，实际开发都用这个",
+      "uv_python": { "spec": "3.12" },
+      "verify": { "cmd": "uv python find 3.12", "regex": "(python3?\\.?1?2?)" }
+    },
+
+    {
+      "id": "apt-base",
+      "group": "core",
+      "required": true,
+      "method": "apt",
+      "version": "-",
+      "why": "系统基础包。一次 apt-get install 批量装完，全程只要一次 sudo",
+      "apt": {
+        "packages": [
+          "zsh", "git", "curl", "wget", "jq", "tmux", "unzip", "zip", "xz-utils",
+          "ca-certificates", "gnupg", "fontconfig", "build-essential", "cmake",
+          "less", "man-db", "bzip2", "zstd"
+        ]
+      },
+      "verify": { "cmd": "dpkg-query -W -f='${Version}' zsh", "regex": "^([0-9].*)" }
+    },
+    {
+      "id": "fonts-noto-cjk",
+      "group": "gui",
+      "required": false,
+      "method": "apt",
+      "version": "-",
+      "why": "思源黑/宋 CJK 兜底字体。~/.config/fontconfig 的注释里把 Noto Serif CJK SC 列为霞鹜文楷的替代方案",
+      "apt": { "packages": ["fonts-noto-cjk", "fonts-noto-color-emoji"] },
+      "verify": { "cmd": "dpkg-query -W -f='${Version}' fonts-noto-cjk", "regex": "^([0-9].*)" }
+    },
+
+    {
+      "id": "ghostty",
+      "group": "gui",
+      "required": false,
+      "method": "snap",
+      "version": "1.3.1",
+      "why": "主力终端模拟器。GPU 渲染、内建 shell-integration、配置可热重载（Ctrl+Shift+,）",
+      "snap": {
+        "name": "ghostty",
+        "classic": true,
+        "publisher": "ken-vandine",
+        "_comment": "非官方打包 —— Ghostty 项目自己不发 deb/snap。classic confinement 意味着全系统访问权限，README 里明写了让用户知情。无 snapd 的系统（容器/WSL/多数云镜像）会自动跳过"
+      },
+      "verify": { "cmd": "ghostty --version", "regex": "([0-9]+\\.[0-9]+\\.[0-9]+)" },
+      "requires_session": "desktop"
+    },
+    {
+      "id": "termius",
+      "group": "gui",
+      "required": false,
+      "method": "vendor_deb",
+      "version": "9.42.2",
+      "why": "SSH 客户端（Electron）。它的配置是 ~/.config/Termius/IndexedDB 里的加密 LevelDB，不可移植 —— 本仓库只负责把应用装上，主机/密钥靠云端账号同步回来",
+      "vendor_deb": {
+        "url": "https://www.termius.com/download/linux/Termius.deb",
+        "package": "termius-app",
+        "_comment": "deb 的 postinst 自己会写 /etc/apt/sources.list.d/termius.list 和 termius-2026.gpg / termius-2029.gpg 两把 keyring，之后由 apt 自动更新。不要手工拼 repo 行 —— keyring 会轮换，硬编码迟早失效"
+      },
+      "verify": { "cmd": "dpkg-query -W -f='${Version}' termius-app", "regex": "^([0-9.]+)" },
+      "manual_followup": "打开 Termius → 登录你的 Termius 账号 → 主机、密钥、代码片段从云端同步下来",
+      "requires_session": "desktop"
+    }
+  ]
+}

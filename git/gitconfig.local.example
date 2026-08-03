@@ -1,0 +1,18 @@
+# 复制成 ~/.gitconfig.local 后填自己的身份。
+# 这个文件被 .gitignore 挡住，绝不会进版本库 —— 仓库是 public 的。
+#
+#   cp git/gitconfig.local.example ~/.gitconfig.local
+#
+# 或者直接用 git 命令写（会落到 ~/.gitconfig，效果一样）：
+#   git config --global user.name  "你的名字"
+#   git config --global user.email "you@example.com"
+
+[user]
+	name = YOUR NAME
+	email = you@example.com
+
+# 多身份：某个目录树下自动切换成另一套 name/email。
+# 注意 gitdir 的路径必须真实存在，否则这条规则永远不触发（踩过这个坑）。
+#
+# [includeIf "gitdir:~/personal/"]
+#	path = ~/.gitconfig-personal

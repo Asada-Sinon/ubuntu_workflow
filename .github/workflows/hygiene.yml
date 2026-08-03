@@ -1,0 +1,55 @@
+name: hygiene
+
+# 这是 public 仓库，提交泄漏没有撤销余地。
+# 每次 push / PR 都跑一遍：语法检查 + manifest 校验 + 泄漏扫描。
+on:
+  push:
+  pull_request:
+  schedule:
+    # 每月 1 号跑一次 —— --dry-run 会对 manifest 里每个 URL 发 HEAD 请求，
+    # 相当于免费的链接腐烂检查器（上游改 asset 名是本仓库的头号失效原因）
+    - cron: '0 6 1 * *'
+
+jobs:
+  syntax:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: bash -n 所有脚本
+        run: |
+          fail=0
+          for f in bootstrap.sh verify.sh lib/*.sh scripts/*.sh; do
+            if bash -n "$f"; then echo "OK   $f"; else echo "FAIL $f"; fail=1; fi
+          done
+          exit $fail
+
+      - name: manifest 可解析
+        run: for f in manifest/*.json; do jq -e . "$f" >/dev/null && echo "OK   $f"; done
+
+      - name: scripts/ 里没有直接调 sudo
+        run: |
+          # 提权必须全部走 lib/common.sh 的 sudo_run()。
+          # 排除 printf/echo/注释里的字面量 —— 那些只是提示文案。
+          if grep -rnE '(^|[^_[:alnum:]])sudo ' scripts/ \
+             | grep -vE '(:[0-9]+:[[:space:]]*#)|printf|echo|err |warn |info ' ; then
+            echo "::error::scripts/ 里出现了直接的 sudo 调用，请改用 sudo_run()"
+            exit 1
+          fi
+          echo "OK：scripts/ 只通过 sudo_run() 提权"
+
+  hygiene:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: 泄漏扫描（邮箱 / 私钥 / 大文件 / git 身份）
+        run: ./verify.sh --hygiene
+
+  dry-run:
+    # 只在定时任务和手动触发时跑：会对约 26 个 URL 发 HEAD 请求
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: dry-run（顺带检查所有下载链接是否还活着）
+        run: ./bootstrap.sh --dry-run --profile desktop --yes

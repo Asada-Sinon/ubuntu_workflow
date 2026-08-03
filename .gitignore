@@ -1,0 +1,88 @@
+# ═══════════════════════════════════════════════════════════════
+#  这是 public 仓库。下面每一条都是「一旦提交就没法撤销」的东西。
+#  除了本文件，verify.sh --hygiene 和 CI 还会主动扫邮箱/私钥/大文件。
+# ═══════════════════════════════════════════════════════════════
+
+# ── 身份与私密 ──────────────────────────────────────────────────
+*.local
+!*.local.example
+.gitconfig.local
+home/.zshrc.local
+
+**/id_*
+!**/id_*.md
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+**/.netrc
+**/authorized_keys
+**/known_hosts
+.env
+.env.*
+!.env.example
+**/credentials*
+**/*token*
+**/*secret*
+**/*password*
+
+# SSH 整体不在本仓库范围内
+home/.ssh/
+ssh/
+
+# ── 会泄漏机器状态的运行时文件 ──────────────────────────────────
+home/.zsh_history
+home/.bash_history
+home/.zcompdump*
+home/.cache/
+home/.local/state/
+home/.config/atuin/history.db*
+home/.config/atuin/key            # atuin 的加密密钥
+home/.config/gh/hosts.yml         # 含 GitHub token
+home/.config/gh/config.yml
+home/.config/tailscale/
+home/.local/share/keyrings/
+
+# Termius：加密 IndexedDB + 活的登录 Cookie + 明文会话录像。
+# 不可移植，也绝不该进版本库。见 docs/manual-steps.md
+home/.config/Termius/
+**/Termius/
+**/session-logs*/
+
+# ── 太大：字体由 60-fonts.sh 从上游下载 ────────────────────────
+home/.local/share/fonts/
+*.ttf
+*.otf
+*.ttc
+*.woff
+*.woff2
+
+# ── 归档 / 二进制 ───────────────────────────────────────────────
+*.tar
+*.tar.gz
+*.tgz
+*.tar.xz
+*.tar.bz2
+*.tar.zst
+*.zip
+*.7z
+*.rar
+*.deb
+*.rpm
+*.AppImage
+*.snap
+
+# ── 构建 / 临时 ─────────────────────────────────────────────────
+.cache/
+dist/
+build/
+tmp/
+*.log
+*.bak
+*.bak.*
+*.orig
+*.rej
+*.swp
+*~
+.DS_Store

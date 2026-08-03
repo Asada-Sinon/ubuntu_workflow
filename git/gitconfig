@@ -1,0 +1,41 @@
+# ═══════════════════════════════════════════════════════════════
+#  git 工具链配置 —— 只有工具，零身份信息
+#
+#  这是 public 仓库，所以这里绝不出现 [user] / user.name / user.email。
+#  身份写在 ~/.gitconfig.local（由 50-dotfiles.sh 生成，不进版本管理）。
+#
+#  本文件不是 ~/.gitconfig 本身，而是被它 include 进去的。
+#  50-dotfiles.sh 生成的 ~/.gitconfig 长这样：
+#      [include] path = <repo>/git/gitconfig
+#      [include] path = ~/.gitconfig.local
+#  这样 `git config --global user.email ...` 会写进真实的 ~/.gitconfig，
+#  而不是写进仓库工作树 —— 软链就会有这个问题，是刻意避开的。
+# ═══════════════════════════════════════════════════════════════
+
+[core]
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+	side-by-side = true
+	line-numbers = true
+	hyperlinks = true
+	true-color = always
+	features = catppuccin-mocha
+
+[merge]
+	# zdiff3 比默认的 merge 多显示共同祖先，冲突好读很多
+	conflictstyle = zdiff3
+
+[diff]
+	colorMoved = default
+
+[credential "https://github.com"]
+	helper =
+	helper = !gh auth git-credential
+
+[include]
+	path = ~/.config/delta/catppuccin.gitconfig

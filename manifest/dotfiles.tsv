@@ -1,0 +1,21 @@
+# 只登记「不走默认行为」的条目。
+#
+# 默认行为：home/ 下的每个文件都软链到 $HOME 的同名位置。
+#   home/.zshrc                  -> ~/.zshrc
+#   home/.config/ghostty/config  -> ~/.config/ghostty/config
+# 映射是可推导的，所以加一个新配置文件不需要动这张表 —— 放对位置就行。
+#
+# 列：repo_path <TAB> target <TAB> mode <TAB> note
+#
+# mode:
+#   link      软链（默认，不必登记）。目标已存在且不是我们的软链时，
+#             先备份到 ~/.config/ubuntu_workflow/backup/<时间戳>/ 再覆盖。
+#   copy      复制。给那些系统 daemon 会回写、或不跟随软链的文件。
+#   generate  由 50-dotfiles.sh 生成内容，不软链。
+#   skip      在 home/ 里但不落地（示例文件之类）。
+#
+# repo_path	target	mode	note
+home/.zshrc.local.example	~/.zshrc.local	skip	示例文件。50-dotfiles 会在 ~/.zshrc.local 不存在时用它初始化一份，但绝不覆盖已有的
+git/gitconfig	~/.gitconfig	generate	★ 不能软链。软链的话一条 `git config --global user.email` 就把真实邮箱写进工作树了，而这是 public 仓库。改为生成一个只含两条 [include] 的真实文件，把写入引到仓库外
+git/gitconfig.local.example	~/.gitconfig.local	skip	同上，只在不存在时初始化
+desktop/gnome-terminal.dconf	-	skip	不是 dotfile。由 70-desktop.sh 在用户明确同意后 dconf load

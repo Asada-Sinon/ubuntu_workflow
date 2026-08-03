@@ -1,0 +1,29 @@
+# 复制成 ~/.zshrc.local —— 本机私有配置，不进版本库。
+# ~/.zshrc 的倒数第二行会自动 source 它。
+#
+#   cp home/.zshrc.local.example ~/.zshrc.local
+#
+# 什么该放这儿：只对这台机器成立的东西。
+# 什么不该放这儿：想在所有机器上都生效的配置 —— 那个改 home/.zshrc 并提交。
+
+# ── 代理 ────────────────────────────────────────────────────────
+# export https_proxy=http://127.0.0.1:7890
+# export http_proxy=http://127.0.0.1:7890
+# export all_proxy=socks5://127.0.0.1:7890
+
+# ── API key / token（绝对不要提交到任何仓库）────────────────────
+# export ANTHROPIC_API_KEY=...
+# export OPENAI_API_KEY=...
+
+# ── 本机专属路径 ────────────────────────────────────────────────
+# export PATH="$HOME/some-local-tool/bin:$PATH"
+# export CUDA_HOME=/usr/local/cuda
+
+# ── 本机专属别名 ────────────────────────────────────────────────
+# alias work='cd ~/workspace/xxx'
+# alias gpu='watch -n1 nvidia-smi'
+
+# ── 覆盖上游默认值 ──────────────────────────────────────────────
+# 因为这个文件在 .zshrc 末尾被 source，这里的设置会覆盖前面的。
+# export EDITOR=code
+# unalias grep      # 不喜欢 grep=rg 的话

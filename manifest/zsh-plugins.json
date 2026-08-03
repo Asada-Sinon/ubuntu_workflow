@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "_comment": "手动 git clone 的 zsh 插件。不用 oh-my-zsh / zinit / zplug —— .zshrc 自己按正确顺序 source。sha 是 2026-08-03 从源机器 git rev-parse HEAD 读出来钉死的。order 字段只是文档，真正的加载顺序在 home/.zshrc 里。",
+
+  "dest": "$HOME/.local/share/zsh/plugins",
+
+  "plugins": [
+    {
+      "id": "fzf-tab",
+      "repo": "https://github.com/Aloxaf/fzf-tab",
+      "sha": "24105b15714bfec37989ed5c5b6e60f572253019",
+      "order": 1,
+      "entry": "fzf-tab.plugin.zsh",
+      "why": "用 fzf 接管 tab 补全菜单，带预览（目录用 eza，文件用 bat）",
+      "load_note": "必须在 compinit 之后、语法高亮之前"
+    },
+    {
+      "id": "zsh-autosuggestions",
+      "repo": "https://github.com/zsh-users/zsh-autosuggestions",
+      "sha": "85919cd1ffa7d2d5412f6d3fe437ebdbeeec4fc5",
+      "order": 2,
+      "entry": "zsh-autosuggestions.zsh",
+      "why": "灰字提示历史命令，→ 或 Ctrl-F 接受。高亮色 #6c7086 = Catppuccin overlay0"
+    },
+    {
+      "id": "zsh-you-should-use",
+      "repo": "https://github.com/MichaelAquilina/zsh-you-should-use",
+      "sha": "5f3d129864ee4505043d88c3486224f1d75b692e",
+      "order": 3,
+      "entry": "you-should-use.plugin.zsh",
+      "why": "敲了有别名的完整命令时提醒你一句。YSU_HARDCORE=0，只提醒不阻止"
+    },
+    {
+      "id": "fast-syntax-highlighting",
+      "repo": "https://github.com/zdharma-continuum/fast-syntax-highlighting",
+      "sha": "3d574ccf48804b10dca52625df13da5edae7f553",
+      "order": 4,
+      "entry": "fast-syntax-highlighting.plugin.zsh",
+      "why": "命令行语法高亮",
+      "load_note": "必须最后加载，否则会盖掉别的插件的 ZLE widget"
+    },
+    {
+      "id": "zsh-completions",
+      "repo": "https://github.com/zsh-users/zsh-completions",
+      "sha": "6ea4709fbc64f813ffa013fdd062fa0f0d9a0dab",
+      "order": 0,
+      "entry": null,
+      "why": "补全定义合集。不 source，只把 src/ 加进 fpath",
+      "load_note": "fpath 必须在 compinit 之前加好"
+    }
+  ]
+}
