@@ -34,8 +34,8 @@ adjust-cell-height = 12%
 # ── 主题 ────────────────────────────────────────────────────────
 # 内置主题列表：ghostty +list-themes
 # 注意名称要和列表里的写法完全一致（空格、大小写都算）
-# 跟随系统亮暗：theme = light:Catppuccin Latte,dark:Catppuccin Mocha
-theme = Catppuccin Mocha
+# 跟随系统亮暗：theme = light:Gruvbox Light,dark:Gruvbox Dark
+theme = Gruvbox Dark
 
 background-opacity = 0.94
 background-blur = 20
