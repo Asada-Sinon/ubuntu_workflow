@@ -20,7 +20,7 @@
       "sha": "85919cd1ffa7d2d5412f6d3fe437ebdbeeec4fc5",
       "order": 2,
       "entry": "zsh-autosuggestions.zsh",
-      "why": "灰字提示历史命令，→ 或 Ctrl-F 接受。高亮色 #6c7086 = Catppuccin overlay0"
+      "why": "灰字提示历史命令，→ 或 Ctrl-F 接受。高亮色 #928374 = Gruvbox gray"
     },
     {
       "id": "zsh-you-should-use",

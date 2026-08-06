@@ -1,0 +1,32 @@
+# 结构对照 catppuccin.gitconfig 手写；混色注释里的百分比含义相同
+# （如 minus-style = 20% red + 80% bg0 的混合色）
+[delta "gruvbox-dark"]
+	blame-palette = "#282828 #1d2021 #32302f #3c3836 #504945"
+	commit-decoration-style = "#928374" bold box ul
+	dark = true
+	file-decoration-style = "#928374"
+	file-style = "#ebdbb2"
+	hunk-header-decoration-style = "#928374" box ul
+	hunk-header-file-style = bold
+	hunk-header-line-number-style = bold "#bdae93"
+	hunk-header-style = file line-number syntax
+	line-numbers-left-style = "#928374"
+	line-numbers-minus-style = bold "#fb4934"
+	line-numbers-plus-style = bold "#b8bb26"
+	line-numbers-right-style = "#928374"
+	line-numbers-zero-style = "#928374"
+	# 35% red 65% bg0
+	minus-emph-style = bold syntax "#72342c"
+	# 20% red 80% bg0
+	minus-style = syntax "#522f2a"
+	# 35% green 65% bg0
+	plus-emph-style = bold syntax "#5a5b27"
+	# 20% green 80% bg0
+	plus-style = syntax "#454528"
+	map-styles = \
+		bold purple => syntax "#644950", \
+		bold blue => syntax "#48544f", \
+		bold cyan => syntax "#4c5d45", \
+		bold yellow => syntax "#725c2a"
+	# Should match the name of the bat theme（bat 内置，无需 bat cache）
+	syntax-theme = gruvbox-dark

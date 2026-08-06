@@ -3,7 +3,7 @@
 > 开 Ubuntu 新机的终端配置。`git clone` 之后 `./bootstrap.sh`，
 > 或者直接把仓库交给 Claude Code —— 它读 `AGENTS.md` 自己配。
 
-一套 zsh + Starship + Catppuccin Mocha 的终端环境，从一台跑了几个月的
+一套 zsh + Starship + Gruvbox Dark 的终端环境，从一台跑了几个月的
 Ubuntu 22.04 工作机上原样固化下来，配上钉死版本的清单和幂等脚本。
 
 ---
@@ -74,7 +74,7 @@ cd ubuntu_workflow
 
 ## 装出来是什么样
 
-- **配色** —— Catppuccin Mocha 全家桶：zsh 语法高亮、starship、fzf、bat、
+- **配色** —— Gruvbox Dark 全家桶：zsh 语法高亮、starship、fzf、bat、
   delta、btop、tmux、Ghostty、GNOME Terminal 全部同一套色板
 - **提示符** —— Starship powerline：
   `os → 用户名 → 目录 → git 分支/状态 → 语言版本 → docker/conda → 时间`，
@@ -181,7 +181,7 @@ docs/                 清单、手动步骤、排错
 |---|---|---|---|
 | 1 | `.zshrc` 写死 `EDITOR=vim`，但 **vim 和 nvim 都没装** | `git commit` 不带 `-m`、`alias zshrc`、`fc` 全部直接失败 | 装 neovim；`.zshrc` 改成 `nvim → vim → vi` 按序探测 |
 | 2 | `alias grep='rg'` 被 `command -v rg` 守卫着，但 **ripgrep 从没装过** | 这条别名一直是死的，从来没生效 | 装 ripgrep，别名真正生效。注意 rg 和 grep 参数不完全兼容，脚本里请写 `command grep` |
-| 3 | tmux 3.2a 装了但 **零配置** | 没有 `.tmux.conf`、没有 tpm，等于裸奔 | 补一份 Catppuccin 配色的 `.tmux.conf`，不依赖 tpm |
+| 3 | tmux 3.2a 装了但 **零配置** | 没有 `.tmux.conf`、没有 tpm，等于裸奔 | 补一份跟全局同套配色的 `.tmux.conf`，不依赖 tpm |
 | 4 | `~/.local/bin` 被 prepend 到 PATH **四次** | `.profile` / `.profile` source 的 `env` / `.zshrc` / `.zshrc` 末尾再 source 一次。根因是 uv 生成的 `env` 用 `$HOME/.local/share/../bin` 这种拼法，字符串上不等于 `$HOME/.local/bin`，它自己的去重守卫永远不触发 | 加 `typeset -U path PATH`；末行路径归一化。`verify.sh` 里有这条的回归测试 |
 
 `verify.sh` 会逐条检查这四项，所以它们不会悄悄退化回去。
@@ -240,7 +240,7 @@ docs/                 清单、手动步骤、排错
 Reproducible terminal environment for a fresh Ubuntu box: hand-written zsh config
 (no framework), Starship prompt, 16 version-pinned static binaries in
 `~/.local/bin`, 5 zsh plugins pinned to commit SHAs, Ghostty terminal, Nerd Font +
-CJK font pairing, all themed Catppuccin Mocha.
+CJK font pairing, all themed Gruvbox Dark.
 
 Run `./bootstrap.sh --dry-run` then `./bootstrap.sh`, or hand the repo to a coding
 agent — `AGENTS.md` is the runbook. `./verify.sh` checks every item and exits

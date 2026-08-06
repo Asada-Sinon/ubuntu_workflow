@@ -112,7 +112,7 @@
       },
       "verify": { "cmd": "bat --version", "regex": "^bat ([0-9.]+)" },
       "post_install": "bat cache --build",
-      "_comment": "post_install 让 bat 认出 ~/.config/bat/themes 里的 4 个 Catppuccin tmTheme；不跑的话 --theme=\"Catppuccin Mocha\" 会报未知主题"
+      "_comment": "post_install 让 bat 认出 ~/.config/bat/themes 里的 4 个 Catppuccin tmTheme（备用）；当前默认 --theme=\"gruvbox-dark\" 是 bat 内置主题，不依赖这一步"
     },
     {
       "id": "eza",
@@ -152,7 +152,7 @@
       "required": false,
       "method": "github_release",
       "version": "1.4.7",
-      "why": "top 的现代替代，alias top=btop。配置和 3 个 Catppuccin 主题在 ~/.config/btop",
+      "why": "top 的现代替代，alias top=btop。配置和主题（gruvbox_dark_v2 + 3 个 Catppuccin 备用）在 ~/.config/btop",
       "github": {
         "repo": "aristocratos/btop",
         "tag": "v{version}",
@@ -167,7 +167,7 @@
       "required": true,
       "method": "github_release",
       "version": "0.19.2",
-      "why": "git 的分页器/diff 渲染器。git/gitconfig 里 core.pager=delta，side-by-side + Catppuccin。注意 tag 没有 v 前缀",
+      "why": "git 的分页器/diff 渲染器。git/gitconfig 里 core.pager=delta，side-by-side + Gruvbox。注意 tag 没有 v 前缀",
       "github": {
         "repo": "dandavison/delta",
         "tag": "{version}",

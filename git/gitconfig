@@ -24,7 +24,7 @@
 	line-numbers = true
 	hyperlinks = true
 	true-color = always
-	features = catppuccin-mocha
+	features = gruvbox-dark
 
 [merge]
 	# zdiff3 比默认的 merge 多显示共同祖先，冲突好读很多
@@ -38,4 +38,7 @@
 	helper = !gh auth git-credential
 
 [include]
+	path = ~/.config/delta/gruvbox.gitconfig
+[include]
+	# catppuccin 主题保留，想切回去改上面 features 一行即可
 	path = ~/.config/delta/catppuccin.gitconfig

@@ -157,6 +157,6 @@ sudo apt install -y fcitx5 fcitx5-chinese-addons fcitx5-config-qt
 - **atuin 默认纯本地** —— `auto_sync = false`。要跨机同步历史需要自己
   `atuin register` / `atuin login`。它的 `history_filter` 已经配好了，
   会拦掉 `pass` / `AWS_SECRET_ACCESS_KEY` / `export *TOKEN=` 之类的命令。
-- **`bat` 的主题** —— `20-binaries.sh` 装完会跑 `bat cache --build`，
-  让它认出 `~/.config/bat/themes/` 里的 4 个 Catppuccin tmTheme。
-  手动装 bat 的话别忘了这一步，否则 `--theme="Catppuccin Mocha"` 会报未知主题。
+- **`bat` 的主题** —— 当前默认 `--theme="gruvbox-dark"` 是 bat 内置主题，开箱即用。
+  `20-binaries.sh` 装完仍会跑 `bat cache --build`，让它认出 `~/.config/bat/themes/`
+  里的 4 个 Catppuccin tmTheme（备用）；只有想切回 Catppuccin 才依赖这一步。

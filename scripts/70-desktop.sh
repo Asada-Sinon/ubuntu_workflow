@@ -126,7 +126,7 @@ if [[ -f "$DCONF_FILE" ]] && command -v dconf >/dev/null 2>&1; then
     report 70 gnome-terminal skip "未安装"
   else
     warn "dconf load 会替换 GNOME Terminal 的【全部】profile，不只是新增一个。"
-    if confirm "导入 GNOME Terminal 的 Catppuccin 配色？（会先自动备份现有配置）" n; then
+    if confirm "导入 GNOME Terminal 的 Gruvbox 配色？（会先自动备份现有配置）" n; then
       bdir="$UW_STATE/backup/$(date +%Y%m%dT%H%M%S)"
       mkdir -p "$bdir"
       dconf dump /org/gnome/terminal/ > "$bdir/gnome-terminal.dconf.bak" 2>/dev/null

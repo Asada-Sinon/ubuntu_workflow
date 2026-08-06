@@ -1,7 +1,8 @@
 #  ─────────────────────────────────────────────────────────────
-#  Starship — Catppuccin Mocha Powerline
+#  Starship — Gruvbox Dark Powerline
 #  需要 Nerd Font（已装：IosevkaTermSlab / Monaspice / JetBrainsMono）
-#  改配色：把 palette 改成 catppuccin_macchiato / frappe / latte
+#  改配色：把 palette 改成 catppuccin_mocha / macchiato / latte
+#  （gruvbox 调色板沿用 catppuccin 的键名，下面段落配置不用动）
 #  ─────────────────────────────────────────────────────────────
 
 format = """
@@ -33,7 +34,7 @@ $cmd_duration\
 $line_break\
 $character"""
 
-palette = 'catppuccin_mocha'
+palette = 'gruvbox_dark'
 add_newline = true
 
 [os]
@@ -167,6 +168,36 @@ format = '[ 󱎫 $duration]($style)'
 success_symbol = '[❯](bold green)'
 error_symbol   = '[❯](bold red)'
 vimcmd_symbol  = '[❮](bold lavender)'
+
+# 键名沿用 catppuccin 的命名，值映射到 gruvbox（text=fg1、base=bg0、
+# peach=橙、lavender=紫 等），这样换 palette 一行就能切整套配色
+[palettes.gruvbox_dark]
+rosewater = "#fbf1c7"
+flamingo  = "#d5c4a1"
+pink      = "#d3869b"
+mauve     = "#b16286"
+red       = "#fb4934"
+maroon    = "#cc241d"
+peach     = "#fe8019"
+yellow    = "#fabd2f"
+green     = "#b8bb26"
+teal      = "#8ec07c"
+sky       = "#83a598"
+sapphire  = "#458588"
+blue      = "#83a598"
+lavender  = "#d3869b"
+text      = "#ebdbb2"
+subtext1  = "#d5c4a1"
+subtext0  = "#bdae93"
+overlay2  = "#a89984"
+overlay1  = "#928374"
+overlay0  = "#7c6f64"
+surface2  = "#665c54"
+surface1  = "#504945"
+surface0  = "#3c3836"
+base      = "#282828"
+mantle    = "#1d2021"
+crust     = "#1d2021"
 
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"

@@ -19,7 +19,7 @@
 
 ## 1. 这个仓库是什么 / 不是什么
 
-**是**：在全新 Ubuntu 22.04+ x86_64 上复现一套 zsh + starship + Catppuccin Mocha
+**是**：在全新 Ubuntu 22.04+ x86_64 上复现一套 zsh + starship + Gruvbox Dark
 的终端环境。手写 `.zshrc`（无框架）、5 个 zsh 插件、16 个钉死版本的工具、
 Ghostty 终端、Nerd Font + 霞鹜文楷。
 

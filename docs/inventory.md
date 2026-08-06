@@ -41,7 +41,7 @@
 |---|---|
 | zsh-completions | 只加进 `fpath`，必须在 compinit **之前** |
 | fzf-tab | compinit **之后**、语法高亮 **之前** |
-| zsh-autosuggestions | 灰字提示，高亮色 `#6c7086`（Catppuccin overlay0） |
+| zsh-autosuggestions | 灰字提示，高亮色 `#928374`（Gruvbox gray） |
 | zsh-you-should-use | 提醒「这条命令有别名」，`YSU_HARDCORE=0` 只提醒不阻止 |
 | fast-syntax-highlighting | **必须最后**，否则会盖掉别的插件的 ZLE widget |
 
@@ -87,12 +87,12 @@ gnupg fontconfig build-essential cmake less man-db bzip2 zstd
 
 | 文件 | 内容 |
 |---|---|
-| `~/.config/starship.toml` | 253 行，Catppuccin Mocha powerline，含 mocha/macchiato/latte 三套调色板 |
+| `~/.config/starship.toml` | Gruvbox Dark powerline，另含 catppuccin mocha/macchiato/latte 三套备用调色板 |
 | `~/.config/ghostty/config` | 字体链、主题、透明度 0.94 + 模糊 20、10 万行回滚、选中即复制、分屏/标签快捷键 |
-| `~/.config/bat/{config,themes/}` | 4 个 Catppuccin tmTheme |
-| `~/.config/btop/{btop.conf,themes/}` | 3 个 Catppuccin theme |
+| `~/.config/bat/{config,themes/}` | 默认 gruvbox-dark（bat 内置）；另 vendored 4 个 Catppuccin tmTheme 备用 |
+| `~/.config/btop/{btop.conf,themes/}` | 默认 gruvbox_dark_v2；另 3 个 Catppuccin theme 备用 |
 | `~/.config/atuin/config.toml` | 纯本地、fuzzy、compact；`history_filter` 拦 pass/gopass/AWS_SECRET_ACCESS_KEY/`export *TOKEN=` |
-| `~/.config/delta/catppuccin.gitconfig` | 123 行，delta 的四套 Catppuccin 配色 |
+| `~/.config/delta/*.gitconfig` | delta 配色：gruvbox-dark（在用）+ 四套 Catppuccin（备用） |
 | `~/.config/fastfetch/config.jsonc` | 模块布局 |
 | `~/.config/fontconfig/conf.d/99-cjk-serif-mono.conf` | 给三款 Nerd Font 配中文 fallback。刻意不动通用 `monospace`（会把其它程序的拉丁字形也换成楷体） |
 | `~/.tmux.conf` | **新写**（GAP-FIX #3） |
@@ -122,7 +122,7 @@ gnupg fontconfig build-essential cmake less man-db bzip2 zstd
 |---|---|
 | Ghostty | v1.3.1，snap classic，打包者 `ken-vandine`（**非官方**） |
 | Termius | 9.42.2，官方 deb 源，装在 `/opt/Termius`（Electron） |
-| GNOME Terminal | dconf profile，Catppuccin Mocha 色板，Iosevka 13，130×40 |
+| GNOME Terminal | dconf profile，Gruvbox Dark 色板，Iosevka 13，130×40 |
 
 ---
 

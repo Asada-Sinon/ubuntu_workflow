@@ -1,4 +1,4 @@
---theme="Catppuccin Mocha"
+--theme="gruvbox-dark"
 --style="numbers,changes,header,grid"
 --italic-text=always
 --paging=auto

@@ -1,7 +1,7 @@
 #  ═══════════════════════════════════════════════════════════════
 #  ~/.zshrc
 #  Starship + fzf + zoxide + atuin + eza/bat/fd/delta
-#  配色统一 Catppuccin Mocha
+#  配色统一 Gruvbox Dark
 #  ═══════════════════════════════════════════════════════════════
 
 # ── PATH（从原 .bashrc 迁移）────────────────────────────────────
@@ -97,7 +97,7 @@ zstyle ':completion:*' squeeze-slashes true
 # 自动建议（灰字提示历史命令，→ 或 Ctrl-F 接受）
 if [[ -f "$ZPLUG/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
   source "$ZPLUG/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#6c7086'      # Catppuccin overlay0
+  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#928374'      # Gruvbox gray
   ZSH_AUTOSUGGEST_STRATEGY=(history completion)
   ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 fi
@@ -117,15 +117,15 @@ fi
 if command -v fzf >/dev/null 2>&1; then
   source <(fzf --zsh)   # Ctrl-T 找文件 / Ctrl-R 历史 / Alt-C 跳目录
 
-  # Catppuccin Mocha 配色 + 圆角边框
+  # Gruvbox Dark 配色 + 圆角边框
   export FZF_DEFAULT_OPTS="
     --height=60% --layout=reverse --border=rounded --info=inline-right
     --marker='▏' --pointer='▶' --prompt='  '
-    --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
-    --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
-    --color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8
-    --color=selected-bg:#45475a
-    --color=border:#6c7086,label:#cdd6f4"
+    --color=bg+:#3c3836,bg:#282828,spinner:#fbf1c7,hl:#fb4934
+    --color=fg:#ebdbb2,header:#fb4934,info:#d3869b,pointer:#fbf1c7
+    --color=marker:#83a598,fg+:#ebdbb2,prompt:#d3869b,hl+:#fb4934
+    --color=selected-bg:#504945
+    --color=border:#928374,label:#ebdbb2"
 
   if command -v fd >/dev/null 2>&1; then
     export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
